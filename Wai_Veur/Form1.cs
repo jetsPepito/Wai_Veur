@@ -18,6 +18,11 @@ namespace Wai_Veur
 {
     public partial class FrmMenu : Form
     {
+        //Tableau des croisières
+        Request[] TR = new Request[8];
+        //nombre de croisières
+        int nbR = 8;
+
         public FrmMenu()
         {
             InitializeComponent();
@@ -25,34 +30,43 @@ namespace Wai_Veur
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Request[] TR = new Request[8];
+        }
+        '
+        private void remplirTableau()
+        {
+            
+            for (int i = 0; i < nbR; i++)
+            {
+                TR[i] = new Request(TbCity.Text, i);
+            }
+        }
 
+        private void afficherListe()
+        {
+            lvCroisiere.Items.Clear();
+
+            //affichage des croisières
+            for (int i = 0; i < 8; i++)
+            {
+                ListViewItem ligne = new ListViewItem();
+                ligne.Text = TR[i].getTemp_C();
+                ligne.SubItems.Add(TR[i].getDesc().ToString());
+                ligne.SubItems.Add(TR[i].getTemp_C().ToString());
+                ligne.SubItems.Add(TR[i].getWind().ToString());
+                lvCroisiere.Items.Add(ligne);
+            }
         }
 
         private void BtnSearch_Click(object sender, EventArgs e)
         {
-            string city = TxtCity.Text;
-            string url = "https://api.openweathermap.org/data/2.5/weather?q="+city+"&appid=46e41fd0cd8c502f7e54d2615621026f";
+            lvCroisiere.Items.Clear();
+            afficherListe();
 
-            //Extraction du json et convertion
-            string json = new WebClient().DownloadString(url);
-            dynamic jsonObject = JsonConvert.DeserializeObject(json);
-
-            //Récupération des données
-            string mainweather = jsonObject.weather[0].main.ToString();
-            string temp_k = jsonObject.main.temp.ToString();
-            double temp_d = double.Parse(temp_k) - 273;
-            double temp_dd = Math.Round((temp_d), 0);
-            string temp_c = temp_dd.ToString();
-            string wind = jsonObject.wind.speed.ToString();
-            string desc = jsonObject.weather[0].description.ToString();
+            remplirTableau();
 
 
-            TbWeather.Text = desc;
-            TBTemp.Text = temp_c;
-            TBCity.Text = city;
-            TbWind.Text = wind + "m/s";
-
-            switch (mainweather){
+            /*switch (mainweather){
                 case "Clouds":
                     PBWeather.Load("images/cloud.png");
                     break;
@@ -64,12 +78,15 @@ namespace Wai_Veur
                     {
                         PBWeather.Load("images/drop.png");
                     }
-                    else if (desc == "") ;
+                    else if (desc == "")
+                    {
+                        
+                    }
                     break;
                 case "thunderstorm":
                     PBWeather.Load("images/flash.png");
-                    break;
-            }
+                    break;}*/
+
         }
     }
 }
